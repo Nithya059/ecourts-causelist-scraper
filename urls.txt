@@ -1,0 +1,2 @@
+https://services.ecourts.gov.in/ecourtindia_v6/?p=causelist
+https://services.ecourts.gov.in/ecourtindia_v6/?p=casestatus
