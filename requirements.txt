@@ -1,4 +1,4 @@
+flask
 playwright
-beautifulsoup4
 requests
-
+beautifulsoup4
