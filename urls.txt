@@ -1,3 +1,4 @@
-https://example-district-court.gov/causelist-page-1
-https://anothercourt.gov/causelist/123
+https://hc.ap.nic.in/cases/display_causelist.php
+https://ecourts.gov.in/somecourt/cause-list
+
 
