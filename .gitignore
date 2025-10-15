@@ -1,0 +1,4 @@
+__pycache__/
+causelists/
+*.pdf
+*.json
