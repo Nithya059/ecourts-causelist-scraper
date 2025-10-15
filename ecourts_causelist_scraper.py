@@ -1,94 +1,69 @@
-# ecourts_causelist_scraper.py
-# Author: Nithya H S
-# Goal: Fetch cause list from Indian eCourts site and optionally download PDFs
-
-import requests
+    import requests
 from bs4 import BeautifulSoup
-import json
 import os
-from datetime import date
+import json
+from datetime import datetime
 
-# Folder to save cause list files
-SAVE_DIR = "causelists"
-os.makedirs(SAVE_DIR, exist_ok=True)
+# Create output folder
+os.makedirs("causelists", exist_ok=True)
 
-# Input file that contains court URLs
-URL_FILE = "urls.txt"
+# Read URLs from urls.txt
+with open("urls.txt", "r") as f:
+    urls = [line.strip() for line in f if line.strip()]
 
-def fetch_html(url):
-    """Fetch HTML content of a given URL"""
+# Store results
+results = []
+
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+}
+
+for url in urls:
+    print(f"Fetching: {url}")
     try:
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        return response.text
+        r = requests.get(url, headers=headers, timeout=15)
+        r.raise_for_status()
+        soup = BeautifulSoup(r.text, "html.parser")
+
+        # Find all links ending with .pdf
+        pdf_links = []
+        for a in soup.find_all("a", href=True):
+            href = a["href"]
+            if href.lower().endswith(".pdf"):
+                # Convert relative URL to absolute
+                pdf_url = requests.compat.urljoin(url, href)
+                pdf_links.append(pdf_url)
+
+        # If no PDF links found, maybe this URL itself is a direct PDF
+        if url.lower().endswith(".pdf"):
+            pdf_links.append(url)
+
+        downloaded = []
+        for link in pdf_links:
+            pdf_name = link.split("/")[-1]
+            pdf_path = os.path.join("causelists", pdf_name)
+            print(f"Downloading PDF: {link}")
+            try:
+                pdf_data = requests.get(link, headers=headers, timeout=20)
+                with open(pdf_path, "wb") as f:
+                    f.write(pdf_data.content)
+                downloaded.append(pdf_name)
+            except Exception as e:
+                print(f"Error downloading {link}: {e}")
+
+        results.append({
+            "url": url,
+            "pdfs_found": pdf_links,
+            "pdfs_downloaded": downloaded
+        })
+
     except Exception as e:
-        print(f"Error fetching {url}: {e}")
-        return None
+        print(f"Failed to fetch {url}: {e}")
 
-def parse_cause_list(html):
-    """Parse cause list details from the court page"""
-    soup = BeautifulSoup(html, "html.parser")
-    cause_list = []
+# Save JSON summary
+output_file = os.path.join("causelists", f"cause_list_{datetime.now().strftime('%Y-%m-%d')}.json")
+with open(output_file, "w") as f:
+    json.dump(results, f, indent=4)
 
-    # This selector may need adjustment based on court site structure
-    rows = soup.find_all("tr")
-    for row in rows:
-        cols = row.find_all("td")
-        if len(cols) >= 3:
-            case = {
-                "serial_no": cols[0].get_text(strip=True),
-                "case_no": cols[1].get_text(strip=True),
-                "party": cols[2].get_text(strip=True)
-            }
-            cause_list.append(case)
-    return cause_list
-
-def download_pdf(url, filename):
-    """Download cause list PDF if available"""
-    try:
-        response = requests.get(url, stream=True)
-        if response.status_code == 200:
-            filepath = os.path.join(SAVE_DIR, filename)
-            with open(filepath, "wb") as f:
-                for chunk in response.iter_content(1024):
-                    f.write(chunk)
-            print(f"PDF saved: {filepath}")
-    except Exception as e:
-        print(f"PDF download failed: {e}")
-
-def main():
-    if not os.path.exists(URL_FILE):
-        print("⚠️ Please add a file named 'urls.txt' with court URLs.")
-        return
-
-    with open(URL_FILE, "r") as f:
-        urls = [line.strip() for line in f.readlines() if line.strip()]
-
-    all_data = {}
-    for url in urls:
-        print(f"\nFetching: {url}")
-        html = fetch_html(url)
-        if not html:
-            continue
-
-        cause_list = parse_cause_list(html)
-        all_data[url] = cause_list
-
-        # Try finding a link to PDF
-        soup = BeautifulSoup(html, "html.parser")
-        pdf_link = soup.find("a", href=lambda h: h and ".pdf" in h.lower())
-        if pdf_link:
-            pdf_url = pdf_link["href"]
-            filename = f"CauseList_{date.today()}.pdf"
-            download_pdf(pdf_url, filename)
-        else:
-            print("No PDF found on this page.")
-
-    # Save all cause list data as JSON
-    json_file = os.path.join(SAVE_DIR, f"cause_list_{date.today()}.json")
-    with open(json_file, "w", encoding="utf-8") as f:
-        json.dump(all_data, f, indent=4, ensure_ascii=False)
-    print(f"\n✅ Cause list saved to {json_file}")
-
-if __name__ == "__main__":
-    main()
+print("Scraping complete.")
+print(f"Results saved to {output_file}")
