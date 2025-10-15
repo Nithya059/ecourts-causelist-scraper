@@ -13,14 +13,25 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Install system deps (for Playwright)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libxss1 libasound2 libgbm-dev
+
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests beautifulsoup4
+          pip install -r requirements.txt
+
+      - name: Install Playwright browsers
+        run: |
+          python -m playwright install --with-deps
 
       - name: Run scraper script
+        env:
+          PYTHONUNBUFFERED: 1
         run: |
           python ecourts_causelist_scraper.py
 
