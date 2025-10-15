@@ -1,5 +1,5 @@
 # ecourts_causelist_scraper.py
-# Author: Your Name
+# Author: Nithya H S
 # Goal: Fetch cause list from Indian eCourts site and optionally download PDFs
 
 import requests
