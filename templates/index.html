@@ -1,0 +1,82 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>eCourts CauseList Downloader</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; padding: 16px; max-width: 720px; margin: auto; }
+    label { display:block; margin-top:10px; font-weight:600 }
+    input, select, button { width:100%; padding:8px; font-size:16px; margin-top:6px; }
+    button { margin-top:14px; }
+    .note { font-size:13px; color:#666; margin-top:8px; }
+  </style>
+</head>
+<body>
+  <h2>eCourts: CauseList Downloader (UI)</h2>
+  <form id="frm">
+    <label>State (type or select)</label>
+    <input name="state" id="state" placeholder="Example: Karnataka" />
+
+    <label>District</label>
+    <input name="district" id="district" placeholder="Example: Bangalore Urban" />
+
+    <label>Court Complex</label>
+    <input name="complex" id="complex" placeholder="Example: City Civil Court" />
+
+    <label>Court Name</label>
+    <input name="court" id="court" placeholder="Example: Court 1" />
+
+    <label>Date (YYYY-MM-DD)</label>
+    <input name="date" id="date" placeholder="2025-10-15" />
+
+    <button type="submit">Fetch & Download PDF</button>
+    <div id="status" class="note"></div>
+  </form>
+
+  <script>
+    const form = document.getElementById('frm');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.textContent = 'Working... please wait (this may take 10–30s)...';
+      const data = {
+        state: document.getElementById('state').value,
+        district: document.getElementById('district').value,
+        complex: document.getElementById('complex').value,
+        court: document.getElementById('court').value,
+        date: document.getElementById('date').value
+      };
+
+      try {
+        const res = await fetch('/fetch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(()=>({message:'unknown'}));
+          status.textContent = 'Error: ' + (err.reason || err.error || res.statusText);
+          return;
+        }
+        // receive PDF blob and download
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'cause_list.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        status.textContent = 'Download started.';
+      } catch (err) {
+        status.textContent = 'Fetch failed: ' + err;
+      }
+    });
+  </script>
+</body>
+  </html>
