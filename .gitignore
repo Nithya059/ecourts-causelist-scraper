@@ -1,4 +1,3 @@
-__pycache__/
 causelists/
-*.pdf
-*.json
+__pycache__/
+*.pyc
