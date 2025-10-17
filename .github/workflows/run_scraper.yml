@@ -1,0 +1,44 @@
+name: Run eCourts Causelist Scraper
+
+on:
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Playwright browsers
+        run: |
+          python -m playwright install --with-deps
+
+      - name: Run scraper script
+        env:
+          PYTHONUNBUFFERED: 1
+        run: |
+          python ecourts_causelist_scraper.py
+
+      - name: List causelists directory (for debug)
+        run: |
+          echo "=== causelists contents ==="
+          ls -lah causelists || echo "No files in causelists/"
+
+      - name: Upload causelists artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: causelists-artifact
+          path: causelists/
+          if-no-files-found: warn
