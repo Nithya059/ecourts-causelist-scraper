@@ -63,8 +63,3 @@ To view the data dashboard:
 4. Paste your raw file link — your dashboard will open instantly!
 
 
-1. Open repo in GitHub mobile app.
-2. Ensure URLs are in urls.txt.
-3. Run GitHub Action (workflow_dispatch → Run workflow).
-4. Download JSON and PDFs from Actions.
-5. Optional: Run mini_dashboard/app.py locally with Python environment.
