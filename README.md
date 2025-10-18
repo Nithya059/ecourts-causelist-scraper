@@ -32,7 +32,38 @@ You can run this project locally (if needed):
 pip install -r requirements.txt
 python ecourts_causelist_scraper.py
 
-## 1. Open repo in GitHub mobile app.
+
+
+### ⚡ Run the Workflow
+1. Go to **Actions → Court Data Fetcher**.
+2. Click **Run workflow → Run workflow**.
+3. Wait 1–2 minutes — GitHub will:
+- Fetch PDFs  
+- Parse the data  
+- Create `cause_list.json` in the repo
+
+
+
+### 📁 View Output Files
+After the workflow finishes:
+- Go to your repository **Files tab**
+- Open the `data/` folder
+- You’ll see:
+- `cause_list.pdf` — downloaded file
+- `cause_list.json` — parsed data
+
+---
+
+### 💻 View Mini Dashboard
+To view the data dashboard:
+
+1. Open the **`index.html`** file in your repo.  
+2. Click **“Raw”** → then long press and copy the link.  
+3. Visit [https://htmlpreview.github.io/](https://htmlpreview.github.io/).  
+4. Paste your raw file link — your dashboard will open instantly!
+
+
+1. Open repo in GitHub mobile app.
 2. Ensure URLs are in urls.txt.
 3. Run GitHub Action (workflow_dispatch → Run workflow).
 4. Download JSON and PDFs from Actions.
