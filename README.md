@@ -60,7 +60,7 @@ To view the data dashboard:
 1. Open the **`index.html`** file in your repo.  
 2. Click **“Raw”** → then long press and copy the link.  
 3. Visit
-4. https://htmlpreview.github.io/?https://raw.githubusercontent.com/Nithya059/ecourts-causelist-scraper/30fa96bba553ed542021c9b9100461899fdf04d4/mini_dashboard/templates/index.html  
+https://htmlpreview.github.io/?https://raw.githubusercontent.com/Nithya059/ecourts-causelist-scraper/main/mini_dashboard/index.html
 5. Paste your raw file link — your dashboard will open instantly!
 
 
