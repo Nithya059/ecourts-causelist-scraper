@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mini Dashboard</title>
+    <style>
+        table { width: 80%; border-collapse: collapse; margin: 20px auto; }
+        th, td { border: 1px solid #333; padding: 8px; text-align: center; }
+        th { background: #f2f2f2; }
+        input[type=text] { width: 200px; padding: 5px; }
+        button { padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h2 style="text-align:center;">Case Mini Dashboard</h2>
+    <form method="post" style="text-align:center;">
+        Search CNR: <input type="text" name="cnr" value="{{ query }}">
+        <button type="submit">Search</button>
+    </form>
+    <table>
+        <tr>
+            <th>Serial</th>
+            <th>CNR</th>
+            <th>Court</th>
+            <th>Case Type</th>
+        </tr>
+        {% for case in cases %}
+        <tr>
+            <td>{{ case['Serial'] }}</td>
+            <td>{{ case['CNR'] }}</td>
+            <td>{{ case['Court'] }}</td>
+            <td>{{ case['Case Type'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+  </html>
