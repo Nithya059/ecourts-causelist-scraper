@@ -1,41 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Mini Dashboard</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        table { width: 90%; border-collapse: collapse; margin: 20px auto; }
-        th, td { border: 1px solid #333; padding: 8px; text-align: center; }
-        th { background: #f2f2f2; }
-        input[type=text] { width: 200px; padding: 5px; }
-        button { padding: 5px 10px; }
-        h2 { text-align: center; }
-        form { text-align: center; margin-bottom: 20px; }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Case Mini Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 12px; max-width: 980px; margin: auto; }
+    h2 { text-align: center; margin-bottom: 6px; }
+    form { text-align: center; margin: 12px 0; }
+    input[type="text"] { padding: 8px; width: 60%; max-width: 360px; }
+    button { padding: 8px 12px; margin-left: 6px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
+    th { background: #f4f4f4; }
+    tr:nth-child(even) { background: #fafafa; }
+    .small { font-size: 12px; color: #666; }
+    #status { text-align:center; margin-top:8px; color:#444; }
+  </style>
 </head>
 <body>
-    <h2>Case Mini Dashboard</h2>
-    <form method="post">
-        Search CNR: <input type="text" name="cnr" value="{{ query }}">
-        <button type="submit">Search</button>
-    </form>
-    <table>
-        <tr>
-            <th>Serial</th>
-            <th>CNR</th>
-            <th>Court</th>
-            <th>Case Type</th>
-            <th>Date</th>
-        </tr>
-        {% for case in cases %}
-        <tr>
-            <td>{{ case['Serial'] }}</td>
-            <td>{{ case['CNR'] }}</td>
-            <td>{{ case['Court'] }}</td>
-            <td>{{ case['Case Type'] }}</td>
-            <td>{{ case.get('Date', '') }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+  <h2>Case Mini Dashboard</h2>
+
+  <form id="searchForm" onsubmit="return false;">
+    <input id="q" type="text" placeholder="Search CNR (e.g. ODBB010... )" />
+    <button id="searchBtn">Search</button>
+    <button id="resetBtn" type="button">Show All</button>
+  </form>
+
+  <div id="status" class="small">Loading data…</div>
+
+  <table id="casesTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>Serial</th>
+        <th>CNR</th>
+        <th>Court</th>
+        <th>Case Type</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <script>
+    // CONFIG:
+    // If you place cause_list.json in the SAME folder as this index.html (recommended for GitHub Pages docs/),
+    // use the relative path below:
+    const JSON_PATH = './cause_list.json';
+
+    // If you instead want to fetch the raw GitHub URL directly, replace JSON_PATH with the raw URL:
+    // const JSON_PATH = 'https://raw.githubusercontent.com/<username>/<repo>/<branch>/path/to/cause_list.json';
+
+    let cases = [];
+
+    function renderTable(list) {
+      const tbody = document.getElementById('tbody');
+      tbody.innerHTML = '';
+      if (!list || list.length === 0) {
+        document.getElementById('status').textContent = 'No cases found.';
+        document.getElementById('casesTable').style.display = 'none';
+        return;
+      }
+
+      list.forEach(c => {
+        const tr = document.createElement('tr');
+
+        const serial = document.createElement('td');
+        serial.textContent = c['Serial'] ?? '';
+        tr.appendChild(serial);
+
+        const cnr = document.createElement('td');
+        cnr.textContent = c['CNR'] ?? '';
+        tr.appendChild(cnr);
+
+        const court = document.createElement('td');
+        court.textContent = c['Court'] ?? '';
+        tr.appendChild(court);
+
+        const type = document.createElement('td');
+        type.textContent = c['Case Type'] ?? '';
+        tr.appendChild(type);
+
+        const date = document.createElement('td');
+        date.textContent = c['Date'] ?? '';
+        tr.appendChild(date);
+
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('status').textContent = `Showing ${list.length} case(s).`;
+      document.getElementById('casesTable').style.display = '';
+    }
+
+    function doSearch() {
+      const q = document.getElementById('q').value.trim().toLowerCase();
+      if (!q) {
+        renderTable(cases);
+        return;
+      }
+      const filtered = cases.filter(c => {
+        const cnr = (c['CNR'] || '').toString().toLowerCase();
+        const court = (c['Court'] || '').toString().toLowerCase();
+        const st = (c['Serial'] || '').toString().toLowerCase();
+        return cnr.includes(q) || court.includes(q) || st.includes(q);
+      });
+      renderTable(filtered);
+    }
+
+    document.getElementById('searchBtn').addEventListener('click', doSearch);
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('q').value = '';
+      renderTable(cases);
+    });
+    document.getElementById('q').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doSearch();
+    });
+
+    // Fetch JSON and render
+    fetch(JSON_PATH)
+      .then(resp => {
+        if (!resp.ok) throw new Error('Failed to fetch JSON: ' + resp.status);
+        return resp.json();
+      })
+      .then(data => {
+        // Support both { "cases": [...] } and top-level array
+        cases = Array.isArray(data) ? data : (data.cases || []);
+        renderTable(cases);
+      })
+      .catch(err => {
+        document.getElementById('status').textContent = 'Error loading data. See console for details.';
+        console.error(err);
+      });
+  </script>
 </body>
 </html>
