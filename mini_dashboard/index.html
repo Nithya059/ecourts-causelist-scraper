@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Case Mini Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f7f7f7; }
+    h1 { text-align: center; color: #333; }
+    input { width: 90%; max-width: 400px; padding: 8px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; border-radius: 8px; overflow: hidden; }
+    th, td { padding: 8px; border-bottom: 1px solid #ddd; text-align: left; }
+    th { background-color: #0047ab; color: white; }
+    tr:hover { background-color: #f1f1f1; }
+  </style>
+</head>
+<body>
+  <h1>Case Mini Dashboard</h1>
+  <center><input type="text" id="search" placeholder="Search by CNR or Case Name..." onkeyup="filterCases()"></center>
+  <table id="cases">
+    <thead>
+      <tr>
+        <th>Serial</th>
+        <th>CNR</th>
+        <th>Court</th>
+        <th>Case Type</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody id="case-body"></tbody>
+  </table>
+
+  <script>
+    const JSON_URL = "https://raw.githubusercontent.com/Nithya059/ecourts-causelist-scraper/f8861b994112ac9a112c7f4ea65bcc7150fafe53/mini_dashboard/cause_list.json";
+
+    async function loadCases() {
+      const res = await fetch(JSON_URL);
+      const data = await res.json();
+      const tbody = document.getElementById("case-body");
+
+      data.forEach(c => {
+        const row = `<tr>
+          <td>${c.Serial || ''}</td>
+          <td>${c.CNR || ''}</td>
+          <td>${c.Court || ''}</td>
+          <td>${c["Case Type"] || ''}</td>
+          <td>${c.Date || ''}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    function filterCases() {
+      const query = document.getElementById("search").value.toLowerCase();
+      const rows = document.querySelectorAll("#case-body tr");
+      rows.forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(query) ? "" : "none";
+      });
+    }
+
+    loadCases();
+  </script>
+</body>
+</html>
