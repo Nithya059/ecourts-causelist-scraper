@@ -1,0 +1,32 @@
+{
+  "cases": [
+    {
+      "Serial": "1",
+      "CNR": "ODB001",
+      "Court": "City Civil Court",
+      "Case Type": "Civil",
+      "Date": "2025-10-18"
+    },
+    {
+      "Serial": "2",
+      "CNR": "ODB002",
+      "Court": "City Criminal Court",
+      "Case Type": "Criminal",
+      "Date": "2025-10-18"
+    },
+    {
+      "Serial": "3",
+      "CNR": "ODB003",
+      "Court": "District Court",
+      "Case Type": "Civil",
+      "Date": "2025-10-17"
+    },
+    {
+      "Serial": "4",
+      "CNR": "ODB004",
+      "Court": "High Court",
+      "Case Type": "Criminal",
+      "Date": "2025-10-16"
+    }
+  ]
+}
