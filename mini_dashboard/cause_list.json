@@ -27,6 +27,20 @@
       "Court": "High Court",
       "Case Type": "Criminal",
       "Date": "2025-10-16"
+    },
+    {
+      "Serial": "5",
+      "CNR": "ODB005",
+      "Court": "City Civil Court",
+      "Case Type": "Civil",
+      "Date": "2025-10-18"
+    },
+    {
+      "Serial": "6",
+      "CNR": "ODB006",
+      "Court": "District Court",
+      "Case Type": "Criminal",
+      "Date": "2025-10-15"
     }
   ]
 }
