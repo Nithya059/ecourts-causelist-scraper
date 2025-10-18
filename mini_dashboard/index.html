@@ -7,10 +7,14 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background: #f7f7f7; }
     h1 { text-align: center; color: #333; }
-    input { width: 90%; max-width: 400px; padding: 8px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ccc; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; border-radius: 8px; overflow: hidden; }
-    th, td { padding: 8px; border-bottom: 1px solid #ddd; text-align: left; }
-    th { background-color: #0047ab; color: white; }
+    input { width: 90%; max-width: 400px; padding: 8px; margin-bottom: 10px; border-radius: 8px; border: 2px solid #0047ab; outline: none; }
+    input:focus { border-color: #ff6600; }
+    button { padding: 5px 10px; margin: 5px; border-radius: 5px; border: none; background: #0047ab; color: #fff; cursor: pointer; }
+    button:hover { background: #ff6600; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: block; overflow-x: auto; }
+    th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; white-space: nowrap; }
+    th { background-color: #0047ab; color: white; text-transform: uppercase; }
+    tr:nth-child(even) { background-color: #f9f9f9; }
     tr:hover { background-color: #f1f1f1; }
   </style>
 </head>
@@ -18,6 +22,10 @@
   <h1>Case Mini Dashboard</h1>
   <center>
     <input type="text" id="search" placeholder="Search by CNR or Case Name..." onkeyup="filterCases()">
+    <div>
+      <button onclick="sortTable('Serial')">Sort by Serial</button>
+      <button onclick="sortTable('Date')">Sort by Date</button>
+    </div>
   </center>
   <table id="cases">
     <thead>
@@ -33,16 +41,14 @@
   </table>
 
   <script>
-    // JSON URL from your GitHub main branch
     const JSON_URL = "https://raw.githubusercontent.com/Nithya059/ecourts-causelist-scraper/main/mini_dashboard/cause_list.json";
-
     let cases = [];
 
     async function loadCases() {
       try {
         const res = await fetch(JSON_URL);
         const data = await res.json();
-        cases = data.cases || [];  // updated for { "cases": [...] } format
+        cases = data.cases || [];
         renderTable(cases);
       } catch (err) {
         console.error("Failed to load JSON:", err);
@@ -53,7 +59,7 @@
     function renderTable(list) {
       const tbody = document.getElementById("case-body");
       tbody.innerHTML = "";
-      if (list.length === 0) {
+      if(list.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5">No cases found.</td></tr>`;
         return;
       }
@@ -79,7 +85,19 @@
       renderTable(filtered);
     }
 
-    // Load cases on page load
+    function sortTable(key) {
+      cases.sort((a, b) => {
+        if(key === 'Date') {
+          return new Date(a[key]) - new Date(b[key]);
+        } else {
+          if(a[key] < b[key]) return -1;
+          if(a[key] > b[key]) return 1;
+          return 0;
+        }
+      });
+      renderTable(cases);
+    }
+
     loadCases();
   </script>
 </body>
