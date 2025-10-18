@@ -31,3 +31,9 @@ You can run this project locally (if needed):
 
 pip install -r requirements.txt
 python ecourts_causelist_scraper.py
+
+## 1. Open repo in GitHub mobile app.
+2. Ensure URLs are in urls.txt.
+3. Run GitHub Action (workflow_dispatch → Run workflow).
+4. Download JSON and PDFs from Actions.
+5. Optional: Run mini_dashboard/app.py locally with Python environment.
