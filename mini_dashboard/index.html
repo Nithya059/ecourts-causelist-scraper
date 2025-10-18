@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Case Mini Dashboard</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background: #f7f7f7; }
@@ -16,7 +16,9 @@
 </head>
 <body>
   <h1>Case Mini Dashboard</h1>
-  <center><input type="text" id="search" placeholder="Search by CNR or Case Name..." onkeyup="filterCases()"></center>
+  <center>
+    <input type="text" id="search" placeholder="Search by CNR or Case Name..." onkeyup="filterCases()">
+  </center>
   <table id="cases">
     <thead>
       <tr>
@@ -31,13 +33,31 @@
   </table>
 
   <script>
+    // JSON URL from your GitHub main branch
     const JSON_URL = "https://raw.githubusercontent.com/Nithya059/ecourts-causelist-scraper/main/mini_dashboard/cause_list.json";
-    async function loadCases() {
-      const res = await fetch(JSON_URL);
-      const data = await res.json();
-      const tbody = document.getElementById("case-body");
 
-      data.forEach(c => {
+    let cases = [];
+
+    async function loadCases() {
+      try {
+        const res = await fetch(JSON_URL);
+        const data = await res.json();
+        cases = data.cases || [];  // updated for { "cases": [...] } format
+        renderTable(cases);
+      } catch (err) {
+        console.error("Failed to load JSON:", err);
+        document.getElementById("case-body").innerHTML = `<tr><td colspan="5">Failed to load cases.</td></tr>`;
+      }
+    }
+
+    function renderTable(list) {
+      const tbody = document.getElementById("case-body");
+      tbody.innerHTML = "";
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5">No cases found.</td></tr>`;
+        return;
+      }
+      list.forEach(c => {
         const row = `<tr>
           <td>${c.Serial || ''}</td>
           <td>${c.CNR || ''}</td>
@@ -51,12 +71,15 @@
 
     function filterCases() {
       const query = document.getElementById("search").value.toLowerCase();
-      const rows = document.querySelectorAll("#case-body tr");
-      rows.forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(query) ? "" : "none";
-      });
+      const filtered = cases.filter(c =>
+        (c.CNR || '').toLowerCase().includes(query) ||
+        (c.Court || '').toLowerCase().includes(query) ||
+        (c["Case Type"] || '').toLowerCase().includes(query)
+      );
+      renderTable(filtered);
     }
 
+    // Load cases on page load
     loadCases();
   </script>
 </body>
