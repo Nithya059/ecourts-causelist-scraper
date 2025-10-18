@@ -31,8 +31,7 @@
   </table>
 
   <script>
-    const JSON_URL = "https://raw.githubusercontent.com/Nithya059/ecourts-causelist-scraper/f8861b994112ac9a112c7f4ea65bcc7150fafe53/mini_dashboard/cause_list.json";
-
+    const JSON_URL = "https://raw.githubusercontent.com/Nithya059/ecourts-causelist-scraper/main/mini_dashboard/cause_list.json";
     async function loadCases() {
       const res = await fetch(JSON_URL);
       const data = await res.json();
