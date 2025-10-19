@@ -63,4 +63,6 @@ To view the data dashboard:
 https://htmlpreview.github.io/?https://raw.githubusercontent.com/Nithya059/ecourts-causelist-scraper/main/mini_dashboard/index.html
 5. Paste your raw file link — your dashboard will open instantly!
 
+## Demo video link:https:psrive.google.com/file/d/1mMo1uk1BzexC9COJL6O_Oho7vRZz6TyG/view?usp=drivesdk
+
 
